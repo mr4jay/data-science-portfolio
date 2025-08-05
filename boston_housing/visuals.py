@@ -11,9 +11,8 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 
 import matplotlib.pyplot as pl
 import numpy as np
-import sklearn.learning_curve as curves
 from sklearn.tree import DecisionTreeRegressor
-from sklearn.cross_validation import ShuffleSplit, train_test_split
+from sklearn.model_selection import ShuffleSplit, train_test_split, learning_curve, validation_curve
 
 def ModelLearning(X, y):
     """ Calculates the performance of several models with varying sizes of training data.
@@ -35,8 +34,8 @@ def ModelLearning(X, y):
         regressor = DecisionTreeRegressor(max_depth = depth)
 
         # Calculate the training and testing scores
-        sizes, train_scores, test_scores = curves.learning_curve(regressor, X, y, \
-            cv = cv, train_sizes = train_sizes, scoring = 'r2')
+        sizes, train_scores, test_scores = learning_curve(regressor, X, y,
+            cv=cv, train_sizes=train_sizes, scoring='r2')
         
         # Find the mean and standard deviation for smoothing
         train_std = np.std(train_scores, axis = 1)
@@ -78,8 +77,8 @@ def ModelComplexity(X, y):
     max_depth = np.arange(1,11)
 
     # Calculate the training and testing scores
-    train_scores, test_scores = curves.validation_curve(DecisionTreeRegressor(), X, y, \
-        param_name = "max_depth", param_range = max_depth, cv = cv, scoring = 'r2')
+    train_scores, test_scores = validation_curve(DecisionTreeRegressor(), X, y,
+        param_name="max_depth", param_range=max_depth, cv=cv, scoring='r2')
 
     # Find the mean and standard deviation for smoothing
     train_mean = np.mean(train_scores, axis=1)
@@ -120,11 +119,12 @@ def PredictTrials(X, y, fitter, data):
         reg = fitter(X_train, y_train)
         
         # Make a prediction
-        pred = reg.predict([data[0]])[0]
+        pred = reg.predict([data])[0]
         prices.append(pred)
-        
+
         # Result
-        print "Trial {}: ${:,.2f}".format(k+1, pred)
+        print("Trial {}: ${:,.2f}".format(k + 1, pred))
 
     # Display price range
-    print "\nRange in prices: ${:,.2f}".format(max(prices) - min(prices))
+    print("\nRange in prices: ${:,.2f}".format(max(prices) - min(prices)))
+
